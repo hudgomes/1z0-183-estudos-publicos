@@ -18,6 +18,10 @@ CDB$ROOT
 
 O Application Root guarda a definição mestre versionada. Cada Application PDB sincroniza essa definição e mantém seus dados específicos.
 
+Application Container organiza uma aplicação compartilhada dentro da CDB. O Application Root é o ponto de administração do modelo; Application PDBs funcionam como tenants. A versão de uma aplicação é registrada por operações `BEGIN ...` e `END ...`, permitindo ao Oracle saber qual mudança pertence a install, patch ou upgrade.
+
+Criar objetos fora de uma operação da aplicação não os transforma automaticamente em objetos comuns versionados. Da mesma forma, alterar o root não atualiza instantaneamente todas as Application PDBs: `SYNC` reproduz as mudanças pendentes em cada tenant.
+
 ## Tipos de compartilhamento
 
 | `SHARING` | Metadados | Dados |
@@ -26,6 +30,10 @@ O Application Root guarda a definição mestre versionada. Cada Application PDB 
 | `DATA` | Compartilhados | Centralizados no Application Root |
 | `EXTENDED DATA` | Compartilhados | Dados comuns mais dados locais |
 | `NONE` | Não compartilhados | Não compartilhados |
+
+`METADATA` mantém uma definição comum e segmentos de dados locais, adequado quando cada tenant possui suas linhas. `DATA` centraliza dados no root e expõe o mesmo conteúdo. `EXTENDED DATA` permite dados comuns no root e extensão local. `NONE` cria objeto comum apenas no sentido administrativo da operação, sem os links de compartilhamento.
+
+A escolha é estrutural. Trocar depois o modo de compartilhamento pode exigir recriação/migração; escolha com base em isolamento, volume de DML, necessidade de dados comuns e comportamento das consultas cross-container.
 
 ## Test case — criar o container
 
@@ -55,6 +63,8 @@ create pluggable database lab_app_pdb2
 alter pluggable database all open;
 ```
 
+As PDBs criadas dentro do Application Root pertencem a esse Application Container. Elas não devem ser confundidas com PDBs comuns conectadas diretamente ao `CDB$ROOT`. Um Application Seed opcional pode acelerar criação de tenants já sincronizados com determinada versão.
+
 ## Instalar a versão inicial
 
 No Application Root:
@@ -83,6 +93,10 @@ alter session set container=lab_app_pdb2;
 alter pluggable database application lab_sales_app sync;
 ```
 
+Durante `BEGIN INSTALL`, o DDL é capturado como parte da versão inicial. `END INSTALL` fecha a operação no root, mas cada Application PDB continua em seu estado anterior até `SYNC`. Consulte `DBA_APPLICATIONS` no root e no tenant para enxergar essa diferença.
+
+Se um tenant estiver fechado ou o sync falhar, os demais podem avançar e ele permanecer pendente. Por isso a implantação precisa registrar versão por PDB, erros de sync e caminho de correção.
+
 ## Aplicar patch
 
 No Application Root:
@@ -101,6 +115,10 @@ alter pluggable database application lab_sales_app
 
 Sincronize novamente as PDBs. O patch existe no root antes de produzir efeito nos tenants.
 
+Patch representa mudança compatível dentro da linha da aplicação e recebe número, além de versão mínima. Upgrade move a aplicação para uma versão declarada e é adequado a transição mais ampla. Ambos registram DDL no root e exigem sync; a diferença expressa o ciclo de vida e as regras de compatibilidade.
+
+Uma Application PDB pode precisar aplicar patches em sequência. Não force um tenant diretamente à versão final sem verificar os caminhos registrados. Objetos e dados locais também podem exigir scripts de transformação que sejam seguros quando executados em cada PDB.
+
 ## Validação
 
 ```sql
@@ -112,6 +130,14 @@ select object_name, object_type, sharing, status
   from dba_objects
  where object_name = 'LAB_PRODUTOS';
 ```
+
+Execute a validação em cada container e compare `APP_VERSION`/status. Depois teste DDL compartilhado, dados locais e consulta a partir do Application Root. `SHARING` exibido no dicionário comprova o tipo do link; não comprova que todos os tenants sincronizaram com sucesso.
+
+## Operação e recuperação
+
+Backup do `CDB$ROOT` não substitui backup dos dados locais das Application PDBs. Mudanças de aplicação devem ter rollback lógico ou backup compatível com o alcance. Se apenas um tenant falhar no sync, investigue-o antes de repetir toda a instalação no root.
+
+Para relatórios globais, `CONTAINERS()` pode consultar objetos metadata-linked nas PDBs abertas. Para poda por chave, Container Map acrescenta roteamento. Esses mecanismos consomem a arquitetura criada aqui, mas não substituem INSTALL/SYNC/PATCH.
 
 ## Limpeza
 

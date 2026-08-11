@@ -21,6 +21,23 @@ Uma PDB pode ser movida logicamente entre CDBs por `UNPLUG`/`PLUG` ou copiada po
 
 Antes do plug, confirme versão, `COMPATIBLE`, character set, opções instaladas e endian format. Um plug direto não converte datafiles entre plataformas com endian diferente.
 
+## Como escolher o método
+
+O ponto principal não é decorar a sintaxe, mas separar **movimentação de metadados**, **cópia física** e **continuidade de serviço**.
+
+| Cenário | Método mais natural | Efeito na origem |
+|---|---|---|
+| Transferir uma PDB fechada e manter os arquivos originais | Unplug em XML + plug com `COPY` | Arquivos originais permanecem |
+| Entregar um pacote único para transporte | Unplug em `.pdb` | Origem fica desconectada da CDB |
+| Reutilizar datafiles já posicionados no destino | Plug com `NOCOPY` | Não há uma segunda cópia de segurança |
+| Mover arquivos para outro diretório no mesmo storage | Plug com `MOVE` | Originais são removidos após o sucesso |
+| Criar outra PDB sem desligar a origem | Hot clone | Origem continua `READ WRITE` quando os pré-requisitos são atendidos |
+| Criar rapidamente clones descartáveis | Snapshot copy | Apenas blocos modificados ocupam espaço adicional |
+
+O manifesto XML descreve a PDB, mas não carrega os datafiles. O arquivo `.pdb` é um archive que reúne manifesto e arquivos, facilitando transporte, porém exigindo espaço para gerar e extrair o pacote. Em ambos os casos, o destino precisa aceitar a configuração registrada no manifesto.
+
+`COPY`, `MOVE` e `NOCOPY` tratam do destino físico dos arquivos, não da compatibilidade lógica. `COPY` é a escolha conservadora porque preserva a origem. `NOCOPY` deve ser usado somente quando os arquivos já estão no local definitivo e existe outra forma de recuperá-los; uma falha posterior deixa menos opções de retorno.
+
 ## Test case 1 — validar e plugar com XML
 
 Execute como `SYS` em um ambiente descartável.
@@ -104,6 +121,23 @@ alter pluggable database lab_clone open;
 ```
 
 Em `NOARCHIVELOG`, feche a origem e abra-a em `READ ONLY` antes do clone.
+
+Durante um hot clone, o Oracle copia uma imagem consistente e usa redo para reproduzir as mudanças ocorridas enquanto a origem continua recebendo DML. Por isso Local Undo e `ARCHIVELOG` são relevantes: cada PDB mantém seu próprio undo e os archived logs preservam as mudanças necessárias até o término da cópia. Remover logs cedo demais pode interromper o processo.
+
+Snapshot copy segue outro princípio. O clone compartilha blocos imutáveis com a origem e grava apenas diferenças, usando sparse files ou capacidade equivalente do storage. Ele economiza tempo e espaço, mas cria dependência tecnológica e operacional do snapshot base; não deve ser tratado como uma cópia independente para recuperação.
+
+## Compatibilidade e abertura
+
+`DBMS_PDB.CHECK_PLUG_COMPATIBILITY` retorna apenas verdadeiro ou falso. A explicação detalhada fica em `PDB_PLUG_IN_VIOLATIONS`, que pode mostrar avisos e erros sobre versão, componentes, parâmetros e opções instaladas. Um aviso nem sempre bloqueia a abertura; uma violação pendente pode exigir correção ou abertura em modo de upgrade.
+
+Depois do plug, a primeira abertura completa a integração da PDB ao destino. Além de consultar `V$PDBS`, confirme:
+
+- serviço registrado no listener;
+- objetos inválidos e componentes do registry;
+- destino real dos datafiles;
+- violações ainda pendentes;
+- backup inicial da nova PDB;
+- `SAVE STATE`, caso a PDB deva reabrir automaticamente com a CDB.
 
 ## Como validar e limpar
 

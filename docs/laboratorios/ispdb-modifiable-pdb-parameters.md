@@ -14,6 +14,22 @@ description: Consulta, alteração, herança e validação de parâmetros em uma
 
 O valor deve ser conferido na versão real do banco. Não deduza a capacidade apenas pelo tipo do parâmetro.
 
+## Herança em duas camadas
+
+Uma PDB começa herdando valores da instância/CDB root. Quando um parâmetro permite escopo por PDB, `ALTER SYSTEM` dentro dela cria uma sobrescrita local. Alterar depois o valor do root não substitui necessariamente a sobrescrita; as PDBs sem valor próprio continuam herdando.
+
+Esse mecanismo permite políticas diferentes para otimizador, memória e outros recursos sem iniciar outra instância. Ainda existe um único conjunto de processos e recursos físicos. Um valor local não pode ultrapassar limites globais ou transformar um parâmetro estático de instância em dinâmico.
+
+Use três propriedades em conjunto:
+
+| Coluna | Significado |
+|---|---|
+| `ISPDB_MODIFIABLE` | aceita valor específico por PDB |
+| `ISSYS_MODIFIABLE` | pode mudar por `ALTER SYSTEM` e em qual condição |
+| `ISSES_MODIFIABLE` | pode ser sobrescrito somente para a sessão |
+
+`TRUE` na primeira coluna não garante `SCOPE=MEMORY` imediato. O parâmetro pode exigir reabertura ou restart conforme sua natureza.
+
 ## Test case — inspecionar o parâmetro
 
 ```sql
@@ -42,6 +58,8 @@ select con_id, name, value, ispdb_modifiable
  where name = 'optimizer_use_sql_plan_baselines';
 ```
 
+Execute as consultas em sessões separadas ou registre o container após cada `ALTER SESSION`. `CON_ID` ajuda, mas uma query em `V$PARAMETER` dentro da PDB normalmente mostra a visão efetiva daquele container. Para comparar toda a CDB, use views `CDB_*`/dinâmicas apropriadas a partir do root e privilégios administrativos.
+
 ## Aplicar uma sobrescrita local
 
 Dentro da PDB de laboratório:
@@ -65,6 +83,10 @@ select name, value
  where name = 'optimizer_use_sql_plan_baselines';
 ```
 
+`SCOPE=MEMORY` muda a instância corrente até fechamento/restart. `SCOPE=SPFILE` prepara o próximo ciclo. `SCOPE=BOTH` tenta aplicar agora e persistir. Dentro de PDB, a persistência dos parâmetros suportados é administrada pelo mecanismo Multitenant; a sintaxe continua expressando se o valor é atual, persistente ou ambos.
+
+No exemplo, desligar SQL Plan Baselines faz o otimizador daquela PDB deixar de usar os planos gerenciados, mas não exclui as baselines. Reativar o parâmetro permite uso novamente. Portanto, parâmetro controla comportamento; objetos SPM continuam armazenados.
+
 ## Remover a sobrescrita
 
 ```sql
@@ -75,6 +97,8 @@ alter system reset optimizer_use_sql_plan_baselines
 ```
 
 Alguns parâmetros exigem reabertura da PDB ou restart para o valor persistente entrar em vigor. Confira `ISSYS_MODIFIABLE` e a documentação do parâmetro.
+
+Depois do reset e do ciclo exigido, o valor volta a ser herdado do root. Não valide apenas `ISDEFAULT`: diferencie default de fábrica, valor herdado e valor explicitamente definido. Compare root, PDB e configuração persistente.
 
 ## Comparar com um parâmetro não modificável
 
@@ -88,6 +112,19 @@ select name, value, ispdb_modifiable
  )
  order by name;
 ```
+
+`DB_BLOCK_SIZE` participa da estrutura física do banco e `CONTROL_FILES` aponta arquivos da instância; não fazem sentido como preferências independentes de uma PDB. Essa diferença ajuda a reconhecer por que alguns parâmetros são globais, enquanto opções de otimizador e limites de recursos podem ter valor local.
+
+## Procedimento seguro
+
+1. confirmar container e valor atual;
+2. consultar as três propriedades de modificação;
+3. registrar o valor do root e de uma PDB de controle;
+4. aplicar mudança reversível somente na PDB de laboratório;
+5. abrir nova sessão e validar valor efetivo;
+6. resetar, executar o ciclo necessário e confirmar a herança.
+
+Evite testar parâmetros de memória sem folga ou opções não documentadas. Uma mudança local ainda pode afetar estabilidade de toda a instância quando aumenta consumo compartilhado.
 
 ## Referências oficiais
 

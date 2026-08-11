@@ -4,146 +4,144 @@ title: Estudos públicos — Oracle 1Z0-183
 
 # Estudos públicos — Oracle 1Z0-183
 
-Laboratórios práticos e materiais autorais para reforçar conceitos de administração do Oracle Database.
+Materiais autorais com explicação teórica e técnica, comparações entre recursos, laboratórios controlados, critérios de validação e referências oficiais do Oracle Database.
 
-## Laboratórios disponíveis
+## Materiais disponíveis
 
-### Application Containers — ciclo de vida e compartilhamento
+### Transporte, plug e clonagem de PDB
 
-Criação de Application Root e Application PDBs, instalação e versionamento, sincronização, patch, upgrade, tipos de `SHARING`, diagnóstico e limpeza do ambiente.
-
-[Abrir laboratório: INSTALL, SYNC e PATCH](./laboratorios/oracle-application-containers-install-sync-patch.html)
-
-### CREATE PLUGGABLE DATABASE a partir de PDB$SEED
-
-Teste prático do usuário administrativo local, role `PDB_DBA`, estado inicial `MOUNTED`, status `NEW` e primeira abertura em `READ WRITE`.
-
-[Abrir laboratório: criar PDB a partir da seed](./laboratorios/create-pluggable-database-pdb-seed.html)
-
-### PDB Lockdown Profile e ALTER SYSTEM
-
-Criação e aplicação de um Lockdown Profile para bloquear `ALTER SYSTEM` em uma PDB específica, mantendo uma segunda PDB como controle.
-
-[Abrir laboratório: PDB Lockdown Profile](./laboratorios/pdb-lockdown-alter-system.html)
-
-### DROP PLUGGABLE DATABASE INCLUDING DATAFILES
-
-Teste destrutivo controlado para validar a remoção da PDB no control file e a exclusão física dos datafiles, comparando também `KEEP DATAFILES` e `UNPLUG`.
-
-[Abrir laboratório: remover PDB e datafiles](./laboratorios/drop-pdb-including-datafiles.html)
-
-### Data Guard per PDB — target CDB
-
-Arquitetura DGPDB entre duas CDBs primárias independentes, configuração pelo Broker e validação dos papéis source e target no nível da PDB.
-
-[Abrir laboratório: Data Guard per PDB](./laboratorios/data-guard-per-pdb-target-cdb.html)
-
-### Relocação online de PDB com indisponibilidade mínima
-
-Migração de uma PDB entre CDBs com a origem em `READ WRITE` durante a cópia, database link, `RELOCATE`, cutover e comparação entre `AVAILABILITY NORMAL` e `MAX`.
-
-[Abrir laboratório: relocação online de PDB](./laboratorios/pdb-online-relocation-minimal-downtime.html)
-
-### ISPDB_MODIFIABLE — validação de parâmetros por PDB
-
-Consulta a `V$PARAMETER`, alteração controlada de `OPTIMIZER_USE_SQL_PLAN_BASELINES`, herança do CDB root e comparação com parâmetros não modificáveis por PDB.
-
-[Abrir laboratório: parâmetros modificáveis por PDB](./laboratorios/ispdb-modifiable-pdb-parameters.html)
-
-### Consultas cross-container com CONTAINERS()
-
-Relatórios agregados entre Application PDBs com uma única consulta executada no Application Root, identificação por `CON_ID` e testes com PDBs abertas e fechadas.
-
-[Abrir laboratório: consultas cross-container](./laboratorios/cross-container-queries-containers.html)
-
-## Roteiro compacto em 15 blocos
-
-### 1. Transporte, plug e clonagem de PDB
-
-Compatibilidade, XML e `.pdb`, `COPY`, `MOVE`, OMF, hot clone e snapshot copy.
+Explica manifesto XML, arquivo `.pdb`, `COPY`, `MOVE`, `NOCOPY`, OMF, compatibilidade, hot clone e snapshot copy, com critérios para escolher cada método.
 
 [Abrir guia](./laboratorios/01-multitenant-transporte-clonagem-pdb.html)
 
-### 2. Segurança, privilégios e recursos por PDB
+### CREATE PLUGGABLE DATABASE a partir de PDB$SEED
 
-Usuários comuns e locais, `CONTAINER`, auditoria, memória, estado restrito e keystore isolado.
+Mostra o papel da seed, o estado inicial da nova PDB, o administrador local, destino dos datafiles, primeira abertura, `SAVE STATE` e validação do serviço.
+
+[Abrir guia](./laboratorios/create-pluggable-database-pdb-seed.html)
+
+### Relocação online de PDB com indisponibilidade mínima
+
+Detalha cópia com a origem em `READ WRITE`, database link, redo, acompanhamento, cutover, serviços e diferenças entre relocation, clone, unplug/plug e Data Guard.
+
+[Abrir guia](./laboratorios/pdb-online-relocation-minimal-downtime.html)
+
+### DROP PLUGGABLE DATABASE e tratamento dos datafiles
+
+Compara `INCLUDING DATAFILES`, `KEEP DATAFILES` e `UNPLUG`, explicando o que acontece com os metadados, arquivos físicos, backups e possibilidades de transporte.
+
+[Abrir guia](./laboratorios/drop-pdb-including-datafiles.html)
+
+### Segurança, privilégios e recursos por PDB
+
+Aborda usuários comuns e locais, escopo `CONTAINER`, grants herdados, modo restrito, parâmetros de memória, Unified Auditing e keystores TDE united e isolated.
 
 [Abrir guia](./laboratorios/02-multitenant-seguranca-recursos-pdb.html)
 
-### 3. Operações Multitenant avançadas
+### PDB Lockdown Profile e ALTER SYSTEM
 
-Container Map, Proxy PDB, upgrade e diagnóstico de compatibilidade.
+Explica Lockdown Profile como camada adicional aos privilégios e demonstra regras por statement, clause e feature, usando uma PDB de controle para validar o bloqueio.
+
+[Abrir guia](./laboratorios/pdb-lockdown-alter-system.html)
+
+### ISPDB_MODIFIABLE — parâmetros por PDB
+
+Mostra herança do root, sobrescrita local, `SCOPE`, propriedades de modificação, reset e comparação entre parâmetros locais e parâmetros estruturais da instância.
+
+[Abrir guia](./laboratorios/ispdb-modifiable-pdb-parameters.html)
+
+### Application Containers — ciclo de vida e compartilhamento
+
+Explica Application Root, Application PDBs, tipos de `SHARING`, operações `INSTALL`, `SYNC`, `PATCH` e `UPGRADE`, versionamento e validação por tenant.
+
+[Abrir guia](./laboratorios/oracle-application-containers-install-sync-patch.html)
+
+### Consultas cross-container com CONTAINERS()
+
+Apresenta consultas distribuídas a partir do root, identificação por `CON_ID`, objetos compartilhados, efeito do estado das PDBs e diferença entre `CONTAINERS()` e Container Map.
+
+[Abrir guia](./laboratorios/cross-container-queries-containers.html)
+
+### Operações Multitenant avançadas
+
+Compara Container Map, Proxy PDB e upgrade de PDB, explicando roteamento, residência dos dados, compatibilidade, modos `UPGRADE`/`MIGRATE` e diagnóstico pós-migração.
 
 [Abrir guia](./laboratorios/03-multitenant-operacoes-avancadas.html)
 
-### 4. RMAN — estratégia, retenção e desempenho
+### Data Guard per PDB — source e target CDB
 
-Retention policy, FRA, block change tracking, image copies, canais e multisection.
+Explica proteção de uma PDB entre CDBs independentes, configurações do Broker, instanciação, transporte e aplicação, switchover, serviços e validação dos papéis no nível da PDB.
+
+[Abrir guia](./laboratorios/data-guard-per-pdb-target-cdb.html)
+
+### RMAN — estratégia, retenção e desempenho
+
+Detalha retention policy, estados `OBSOLETE` e `EXPIRED`, incrementais, Block Change Tracking, image copies atualizadas, canais, multisection, FRA e exclusão de archivelogs.
 
 [Abrir guia](./laboratorios/04-rman-estrategia-configuracao.html)
 
-### 5. RMAN — validação, corrupção e recuperação
+### RMAN — validação, corrupção e recuperação
 
-`VALIDATE`, Data Recovery Advisor, block recovery, restore, control file, PDB e incarnations.
+Compara `VALIDATE`, `BACKUP VALIDATE` e `RESTORE VALIDATE`, além de Data Recovery Advisor, block recovery, restore/recover de datafile e PDB, control file e incarnations.
 
 [Abrir guia](./laboratorios/05-rman-validacao-recuperacao.html)
 
-### 6. Flashback e transporte cross-platform
+### Flashback, restore points e transporte cross-platform
 
-Flashback Table, Flashback Drop, restore points e conversão entre plataformas.
+Explica Flashback Table, Flashback Drop, Flashback Database, restore points, instance recovery e transporte de tablespaces entre plataformas com conversão de endian.
 
 [Abrir guia](./laboratorios/06-flashback-transporte-cross-platform.html)
 
-### 7. Performance — AWR, ADDM, ASH e métricas
+### Performance — AWR, ADDM, ASH e métricas
 
-Snapshots, baselines, relatórios, eventos de espera, alertas e diagnóstico histórico.
+Apresenta diagnóstico orientado por DB Time, snapshots, amostras ASH, relatórios AWR, análise ADDM, baselines, thresholds, alertas e interpretação de eventos de espera.
 
 [Abrir guia](./laboratorios/07-performance-awr-addm-metricas.html)
 
-### 8. Performance — otimizador e SQL Tuning
+### Performance — otimizador e SQL Tuning
 
-Adaptive plans, feedback, estatísticas pendentes, SQL Patch, baselines e monitoramento.
+Explica cardinalidade, Adaptive Plans, Statistics Feedback, estatísticas pendentes, function-based indexes, SQL Profiles, SQL Patches, SQL Plan Baselines, advisors e tracing seletivo.
 
 [Abrir guia](./laboratorios/08-performance-otimizador-sql.html)
 
-### 9. Performance — workload, In-Memory e recursos
+### Performance — workload, In-Memory e recursos
 
-SPA, Database Replay, In-Memory, HugePages, paralelismo e Resource Manager.
+Compara SQL Performance Analyzer e Database Replay e detalha Database In-Memory, FastStart, HugePages, Resource Manager, paralelismo e compressão.
 
 [Abrir guia](./laboratorios/09-performance-workload-inmemory-recursos.html)
 
-### 10. Deploy — DBCA e provisionamento
+### Deploy — DBCA e provisionamento
 
-Pré-requisitos, CDB, OMF, templates, FRA, `ARCHIVELOG` e character set.
+Explica as camadas do provisionamento, validação de pré-requisitos, criação silenciosa de CDB/PDB, OMF, FRA, `ARCHIVELOG`, templates, serviços e character set.
 
 [Abrir guia](./laboratorios/10-deploy-dbca-provisionamento.html)
 
-### 11. Deploy — Grid Infrastructure e SRVCTL
+### Deploy — Grid Infrastructure e SRVCTL
 
-Instalação image-based, CLUVFY, dry-run, `switchGridHome`, Oracle Restart e serviços.
+Aborda instalação image-based, grupos do sistema operacional, CLUVFY, dry-run, troca out-of-place do Grid home, Oracle Restart, Clusterware, recursos e serviços.
 
 [Abrir guia](./laboratorios/11-deploy-grid-restart-srvctl.html)
 
-### 12. Deploy — patching e AutoUpgrade
+### Deploy — patching e AutoUpgrade
 
-OPatchAuto, datapatch, Gold Images, Local Rolling, Data Guard e análise de upgrade.
+Separa patch binário, `datapatch` e upgrade, detalhando OPatchAuto, Gold Images, Fleet Patching, Data Guard, fases do AutoUpgrade e validação por container.
 
 [Abrir guia](./laboratorios/12-deploy-patching-upgrade.html)
 
-### 13. Oracle AI Vector Search
+### Oracle AI Vector Search
 
-`VECTOR`, métricas, busca exata, HNSW, quantização, hybrid search e embeddings ONNX.
+Explica embeddings, tipo `VECTOR`, métricas de distância, busca exata e aproximada, HNSW, IVF, Vector Pool, target accuracy, ONNX, quantização e hybrid search.
 
 [Abrir guia](./laboratorios/13-ai-vector-search.html)
 
-### 14. Recursos 26ai para desenvolvedores
+### Oracle AI Database — recursos para desenvolvedores
 
-Privilégios por schema, SQL Domains, annotations, duality views e concorrência.
+Apresenta privilégios por schema, `DB_DEVELOPER_ROLE`, SQL Domains, annotations, JSON-relational duality, ETAG, Lock-Free Reservations, Priority Transactions e SQL Transpiler.
 
 [Abrir guia](./laboratorios/14-ai-recursos-desenvolvedor.html)
 
-### 15. Segurança, disponibilidade e distribuição
+### Oracle AI Database — segurança, disponibilidade e distribuição
 
-True Cache, SQL Firewall, TLS, Raft e Application Continuity.
+Separa os papéis de True Cache, SQL Firewall, TLS, Raft replication e Application Continuity, incluindo consistência, quorum, allow-list, serviços e failover.
 
 [Abrir guia](./laboratorios/15-ai-seguranca-distribuicao-cache.html)
