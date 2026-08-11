@@ -82,5 +82,5 @@ drop lockdown profile lab_lockdown;
 
 ## Referências oficiais
 
-- [Using PDB Lockdown Profiles](https://docs.oracle.com/en/database/oracle/oracle-database/26/multi/using-pdb-lockdown-profiles.html)
+- [PDB_LOCKDOWN](https://docs.oracle.com/en/database/oracle/oracle-database/26/refrn/PDB_LOCKDOWN.html)
 - [ALTER LOCKDOWN PROFILE](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/ALTER-LOCKDOWN-PROFILE.html)

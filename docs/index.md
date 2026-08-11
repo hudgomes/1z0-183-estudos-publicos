@@ -55,3 +55,95 @@ Consulta a `V$PARAMETER`, alteração controlada de `OPTIMIZER_USE_SQL_PLAN_BASE
 Relatórios agregados entre Application PDBs com uma única consulta executada no Application Root, identificação por `CON_ID` e testes com PDBs abertas e fechadas.
 
 [Abrir laboratório: consultas cross-container](./laboratorios/cross-container-queries-containers.html)
+
+## Roteiro compacto em 15 blocos
+
+### 1. Transporte, plug e clonagem de PDB
+
+Compatibilidade, XML e `.pdb`, `COPY`, `MOVE`, OMF, hot clone e snapshot copy.
+
+[Abrir guia](./laboratorios/01-multitenant-transporte-clonagem-pdb.html)
+
+### 2. Segurança, privilégios e recursos por PDB
+
+Usuários comuns e locais, `CONTAINER`, auditoria, memória, estado restrito e keystore isolado.
+
+[Abrir guia](./laboratorios/02-multitenant-seguranca-recursos-pdb.html)
+
+### 3. Operações Multitenant avançadas
+
+Container Map, Proxy PDB, upgrade e diagnóstico de compatibilidade.
+
+[Abrir guia](./laboratorios/03-multitenant-operacoes-avancadas.html)
+
+### 4. RMAN — estratégia, retenção e desempenho
+
+Retention policy, FRA, block change tracking, image copies, canais e multisection.
+
+[Abrir guia](./laboratorios/04-rman-estrategia-configuracao.html)
+
+### 5. RMAN — validação, corrupção e recuperação
+
+`VALIDATE`, Data Recovery Advisor, block recovery, restore, control file, PDB e incarnations.
+
+[Abrir guia](./laboratorios/05-rman-validacao-recuperacao.html)
+
+### 6. Flashback e transporte cross-platform
+
+Flashback Table, Flashback Drop, restore points e conversão entre plataformas.
+
+[Abrir guia](./laboratorios/06-flashback-transporte-cross-platform.html)
+
+### 7. Performance — AWR, ADDM, ASH e métricas
+
+Snapshots, baselines, relatórios, eventos de espera, alertas e diagnóstico histórico.
+
+[Abrir guia](./laboratorios/07-performance-awr-addm-metricas.html)
+
+### 8. Performance — otimizador e SQL Tuning
+
+Adaptive plans, feedback, estatísticas pendentes, SQL Patch, baselines e monitoramento.
+
+[Abrir guia](./laboratorios/08-performance-otimizador-sql.html)
+
+### 9. Performance — workload, In-Memory e recursos
+
+SPA, Database Replay, In-Memory, HugePages, paralelismo e Resource Manager.
+
+[Abrir guia](./laboratorios/09-performance-workload-inmemory-recursos.html)
+
+### 10. Deploy — DBCA e provisionamento
+
+Pré-requisitos, CDB, OMF, templates, FRA, `ARCHIVELOG` e character set.
+
+[Abrir guia](./laboratorios/10-deploy-dbca-provisionamento.html)
+
+### 11. Deploy — Grid Infrastructure e SRVCTL
+
+Instalação image-based, CLUVFY, dry-run, `switchGridHome`, Oracle Restart e serviços.
+
+[Abrir guia](./laboratorios/11-deploy-grid-restart-srvctl.html)
+
+### 12. Deploy — patching e AutoUpgrade
+
+OPatchAuto, datapatch, Gold Images, Local Rolling, Data Guard e análise de upgrade.
+
+[Abrir guia](./laboratorios/12-deploy-patching-upgrade.html)
+
+### 13. Oracle AI Vector Search
+
+`VECTOR`, métricas, busca exata, HNSW, quantização, hybrid search e embeddings ONNX.
+
+[Abrir guia](./laboratorios/13-ai-vector-search.html)
+
+### 14. Recursos 26ai para desenvolvedores
+
+Privilégios por schema, SQL Domains, annotations, duality views e concorrência.
+
+[Abrir guia](./laboratorios/14-ai-recursos-desenvolvedor.html)
+
+### 15. Segurança, disponibilidade e distribuição
+
+True Cache, SQL Firewall, TLS, Raft e Application Continuity.
+
+[Abrir guia](./laboratorios/15-ai-seguranca-distribuicao-cache.html)

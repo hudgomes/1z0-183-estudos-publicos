@@ -93,5 +93,5 @@ drop pluggable database lab_seed_pdb including datafiles;
 
 ## Referências oficiais
 
-- [Creating a PDB from the Seed](https://docs.oracle.com/en/database/oracle/oracle-database/26/multi/creating-a-pdb-from-the-seed.html)
+- [Creating a PDB from the Seed](https://docs.oracle.com/en/database/oracle/oracle-database/26/multi/creating-a-pdb-from-scratch.html)
 - [CREATE PLUGGABLE DATABASE](https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/CREATE-PLUGGABLE-DATABASE.html)

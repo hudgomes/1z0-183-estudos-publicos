@@ -99,4 +99,4 @@ Faça esse passo somente após validar saúde, lag, conectividade, serviços e p
 ## Referências oficiais
 
 - [Data Guard Broker Concepts](https://docs.oracle.com/en/database/oracle/oracle-database/26/dgbkr/oracle-data-guard-broker-concepts.html)
-- [Data Guard per PDB with DGMGRL](https://docs.oracle.com/en/database/oracle/oracle-database/26/dgbkr/using-data-guard-broker-to-manage-data-guard-pdb-configurations.html)
+- [Managing Members of a DG PDB Broker Configuration](https://docs.oracle.com/en/database/oracle/oracle-database/26/dgbkr/managing-oracle-data-guard-broker-dgpdb-configuration-members.html)
